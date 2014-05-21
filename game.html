@@ -16,12 +16,17 @@ document.addEventListener('DOMContentLoaded', main);
 var sketch;
 var context;
 var rectangle;
+var rectangle2;
 var circle;
 var dx = 3;
 var dy = 3;
 var fps = 10;
 var go_left = false;
 var go_right = false;
+var go_left2 = false;
+var go_right2 = false;
+var scoret = 0;
+var scoreb = 0;
 
 function main() {
 	sketch = document.getElementById('sketch');
@@ -30,6 +35,8 @@ function main() {
 
 	// start circle at left edge, centered vertically
 	rectangle = {'x':sketch.offsetWidth / 2, 'y':sketch.offsetWidth - 20, 'w':90, 'h':20};
+	rectangle2 = {'x':100, 'y': 0, 'w':90, 'h':20};
+
 	circle = {'x':sketch.offsetWidth / 2 - 100, 'y':sketch.offsetWidth / 2 + 10, 'r':12};
 	animation = setInterval(animate, fps);
 
@@ -52,6 +59,24 @@ function main() {
 			go_right = false;
 		}
 	});
+	document.addEventListener('keydown', function(event) {
+		if(event.keyCode === 49) {
+			go_left2 = true;
+		}
+
+		if(event.keyCode === 50) {
+			go_right2 = true;
+		}
+	});
+	document.addEventListener('keyup', function(event) {
+		if(event.keyCode === 49) {
+			go_left2 = false;
+		}
+
+		if(event.keyCode === 50) {
+			go_right2 = false;
+		}
+	});
 }
 
 
@@ -65,25 +90,40 @@ function animate() {
 	if(go_right) {
 		rectangle.x = rectangle.x + 5;
 	}
-
 	if(go_left) {
 		rectangle.x = rectangle.x - 5;
 	}
-
+	if(go_right2) {
+		rectangle2.x = rectangle2.x + 5;
+	}
+	if(go_left2) {
+		rectangle2.x = rectangle2.x - 5;
+	}
 	if (rectangle.x > sketch.offsetWidth - rectangle.w) {
 		rectangle.x = sketch.offsetWidth - rectangle.w;
+	} 
+	if (rectangle2.x > sketch.offsetWidth - rectangle2.w) {
+		rectangle2.x = sketch.offsetWidth - rectangle2.w;
 	} 
 	if (rectangle.x < 0) {
 		rectangle.x = 0
 	}
-
+	if (rectangle2.x < 0) {
+		rectangle2.x = 0
+	}
 	if (circle.y >= sketch.offsetHeight - rectangle.h && circle.x > rectangle.x && circle.x < rectangle.x + rectangle.w) {
 		dy = dy * -1;
+		scoreb ++;
 	} else if (circle.x > sketch.offsetWidth - dx - circle.r || circle.x < (dx * -1) + circle.r) {
 		dx = dx * -1;
 	} else if (circle.y < (dy * -1) + circle.r) {
 		dy = dy * -1;
 	} else if (circle.y > sketch.offsetHeight - dy - circle.r) {
+		clearInterval(animation);
+	}if (circle.y <= rectangle2.h && circle.x > rectangle2.x && circle.x < rectangle2.x + rectangle2.w) {
+		dy = dy * -1;
+		scoret ++;
+	}else if (circle.y < 0 + dy + circle.r) {
 		clearInterval(animation);
 	}
 
@@ -91,9 +131,12 @@ function animate() {
 	circle.y = circle.y + dy;
 
 	context.fillRect(rectangle.x, rectangle.y, rectangle.w, rectangle.h);
+	context.fillRect(rectangle2.x, rectangle2.y, rectangle2.w, rectangle2.h);
 	draw_circle(circle.x, circle.y, circle.r)
-	context.fillText('CONSOOOOOOLE', 200, 200);
-
+	context.fillText(scoret, 400, 30);
+	context.fillText('Top', 400, 50);
+	context.fillText('Bottom', 400, 430);
+	context.fillText(scoreb, 400, 450);
 }
 
 function draw_circle(x, y, r) {
